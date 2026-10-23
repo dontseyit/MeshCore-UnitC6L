@@ -38,8 +38,12 @@ void MomentaryButton::begin() {
   }
 }
 
+int MomentaryButton::readRaw() const {
+  return _threshold > 0 ? (analogRead(_pin) < _threshold) : digitalRead(_pin);
+}
+
 bool  MomentaryButton::isPressed() const {
-  int btn = _threshold > 0 ? (analogRead(_pin) < _threshold) : digitalRead(_pin);
+  int btn = readRaw();
   return isPressed(btn);
 }
 
@@ -66,7 +70,7 @@ int MomentaryButton::check(bool repeat_click) {
   if (_pin < 0) return BUTTON_EVENT_NONE;
 
   int event = BUTTON_EVENT_NONE;
-  int btn = _threshold > 0 ? (analogRead(_pin) < _threshold) : digitalRead(_pin);
+  int btn = readRaw();
   if (btn != prev) {
     if (isPressed(btn)) {
       down_at = millis();

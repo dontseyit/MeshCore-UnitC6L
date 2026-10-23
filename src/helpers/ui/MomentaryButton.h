@@ -22,6 +22,9 @@ class MomentaryButton {
 
   bool isPressed(int level) const;
 
+protected:
+  virtual int readRaw() const;  // override for buttons not wired to a GPIO
+
 public:
   MomentaryButton(int8_t pin, int long_press_mills=0, bool reverse=false, bool pulldownup=false, bool multiclick=true);
   MomentaryButton(int8_t pin, int long_press_mills, int analog_threshold);

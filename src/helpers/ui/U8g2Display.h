@@ -16,10 +16,24 @@
   #define OLED_HEIGHT       40
 #endif
 
+// Panel class + constructor args; override both for another panel/bus (e.g. SPI)
+#ifndef U8G2_DISPLAY_TYPE
+  #define U8G2_DISPLAY_TYPE U8G2_SSD1306_72X40_ER_F_HW_I2C
+  #define U8G2_DISPLAY_ARGS U8G2_R0, /* reset=*/ U8X8_PIN_NONE
+#endif
+
+// Fonts for text size 1 and >=2
+#ifndef U8G2_FONT_SMALL
+  #define U8G2_FONT_SMALL   u8g2_font_5x7_mr
+#endif
+#ifndef U8G2_FONT_LARGE
+  #define U8G2_FONT_LARGE   u8g2_font_6x10_mr
+#endif
+
 class U8g2Display : public DisplayDriver {
   // U8g2 constructor for SSD1306/SSD1315 72×40 panel — handles all
   // GDDRAM column/page offsets, SETMULTIPLEX, SETDISPLAYOFFSET internally
-  U8G2_SSD1306_72X40_ER_F_HW_I2C _u8g2;
+  U8G2_DISPLAY_TYPE _u8g2;
   bool _isOn;
   uint8_t _drawColor;
 
@@ -29,9 +43,9 @@ class U8g2Display : public DisplayDriver {
 
   void applyFont(int sz) {
     if (sz >= 2) {
-      _u8g2.setFont(u8g2_font_6x10_mr); // slightly larger font for better readability. TODO: more font sizes?
+      _u8g2.setFont(U8G2_FONT_LARGE); // slightly larger font for better readability. TODO: more font sizes?
     } else {
-      _u8g2.setFont(u8g2_font_5x7_mr);
+      _u8g2.setFont(U8G2_FONT_SMALL);
     }
     _fontAscent = _u8g2.getAscent();
     _fontHeight = _u8g2.getAscent() - _u8g2.getDescent();
@@ -39,7 +53,7 @@ class U8g2Display : public DisplayDriver {
 
 public:
   U8g2Display() : DisplayDriver(OLED_WIDTH, OLED_HEIGHT),
-      _u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE),
+      _u8g2(U8G2_DISPLAY_ARGS),
       _isOn(false), _drawColor(1), _fontAscent(5), _fontHeight(6) {}
 
   bool begin() {
