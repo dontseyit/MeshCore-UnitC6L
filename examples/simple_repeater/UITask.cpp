@@ -2,6 +2,9 @@
 #include "target.h"
 #include <Arduino.h>
 #include <helpers/CommonCLI.h>
+#include "MyMesh.h"
+
+extern MyMesh the_mesh;
 
 #ifndef USER_BTN_PRESSED
 #define USER_BTN_PRESSED LOW
@@ -106,6 +109,11 @@ void UITask::renderCurrScreen() {
     _display->setCursor(0, 30);
     sprintf(tmp, "BW: %03.2f CR: %d", _node_prefs->bw, _node_prefs->cr);
     _display->print(tmp);
+
+    if (millis() < _advert_msg_until) {
+      _display->setCursor(0, 40);
+      _display->print("Advert sent");
+    }
   }
 }
 
@@ -119,6 +127,12 @@ void UITask::loop() {
       _display->turnOn();
     }
     _auto_off = millis() + AUTO_OFF_MILLIS;   // extend auto-off timer
+  } else if (ev == BUTTON_EVENT_DOUBLE_CLICK) {
+    the_mesh.sendSelfAdvertisement(0, true);   // flood advert
+    _display->turnOn();
+    _advert_msg_until = millis() + 3000;
+    _next_refresh = 0;
+    _auto_off = millis() + AUTO_OFF_MILLIS;
   } else if (ev == BUTTON_EVENT_LONG_PRESS) {
       _display->turnOn();
       Serial.println("Powering Off");

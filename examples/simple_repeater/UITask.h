@@ -12,6 +12,7 @@ class UITask {
   char _version_info[32];
   unsigned long _powering_off_at = 0;
   unsigned long _started_at = 0;
+  unsigned long _advert_msg_until = 0;
 
   void renderCurrScreen();
 public:
