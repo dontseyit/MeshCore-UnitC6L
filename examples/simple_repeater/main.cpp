@@ -73,7 +73,10 @@ void setup() {
   fs = &InternalFS;
   IdentityStore store(InternalFS, "");
 #elif defined(ESP32)
-  SPIFFS.begin(true);
+  #ifndef SPIFFS_PARTITION_LABEL
+    #define SPIFFS_PARTITION_LABEL NULL   // first spiffs partition
+  #endif
+  SPIFFS.begin(true, "/spiffs", 10, SPIFFS_PARTITION_LABEL);
   fs = &SPIFFS;
   IdentityStore store(SPIFFS, "/identity");
 #elif defined(RP2040_PLATFORM)
