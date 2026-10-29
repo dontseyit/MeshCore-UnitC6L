@@ -3,12 +3,14 @@
 
 The firmware takes every key literally (no backspace), so lines are edited here
 and only sent on Enter. Arrow keys and history work. Ctrl-D or Ctrl-C quits.
+On connect it sets the device clock from this computer (the firmware only lets it move forward).
 
 Usage: ~/.platformio/penv/bin/python console.py <serial-port> [baud]
 """
 import readline  # noqa: F401  (enables line editing + history for input())
 import sys
 import threading
+import time
 
 import serial
 
@@ -35,6 +37,7 @@ def main():
     ser.open()
     threading.Thread(target=reader, args=(ser,), daemon=True).start()
     print(f"Connected to {ser.port}. Type a command, Enter to send, Ctrl-D to quit.")
+    ser.write(f"time {int(time.time())}\r".encode())  # no battery-backed RTC on the C6L
     try:
         while True:
             ser.write(input().encode() + b"\r")

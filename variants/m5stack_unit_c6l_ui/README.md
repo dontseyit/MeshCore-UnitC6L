@@ -60,7 +60,8 @@ Hold the button while powering on, keep holding ~1 s until the screen says
 ## Repeater console
 
 The repeater CLI has no line editing, so use the bundled line-based console
-(edit, history, Ctrl-D to quit; it doesn't reset the board on open):
+(edit, history, Ctrl-D to quit; it doesn't reset the board on open). It also sets the clock
+from your computer on connect:
 
 ```sh
 ~/.platformio/penv/bin/python variants/m5stack_unit_c6l_ui/console.py /dev/cu.usbmodemXXXX
