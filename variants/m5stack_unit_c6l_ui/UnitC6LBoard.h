@@ -15,8 +15,8 @@
 #define PI4IO_REG_IN_STA    0x0F
 
 #define PI4IO_BTN       (1 << 0)   // user button, active low
-#define PI4IO_LNA_EN    (1 << 5)
-#define PI4IO_ANT_SW    (1 << 6)
+#define PI4IO_RX_EN     (1 << 5)   // receive path / LNA; off while transmitting (Zephyr: rx-enable-gpios)
+#define PI4IO_ANT_SW    (1 << 6)   // antenna enable
 #define PI4IO_LORA_RST  (1 << 7)   // SX1262 NRST, active low
 
 class UnitC6LBoard : public ESP32Board {
@@ -41,17 +41,21 @@ public:
     digitalWrite(PIN_OLED_CS, HIGH);
     SPI.begin(P_LORA_SCLK, P_LORA_MISO, P_LORA_MOSI);  // later begin() calls are no-ops
 
-    const uint8_t outs = PI4IO_LNA_EN | PI4IO_ANT_SW | PI4IO_LORA_RST;
+    const uint8_t outs = PI4IO_RX_EN | PI4IO_ANT_SW | PI4IO_LORA_RST;
     ioWrite(PI4IO_REG_OUT_SET, 0);              // radio in reset, RF path off
     ioWrite(PI4IO_REG_IO_DIR, outs);
     ioWrite(PI4IO_REG_OUT_HIZ, (uint8_t)~outs);
     ioWrite(PI4IO_REG_PULL_SEL, PI4IO_BTN);     // button pulled up, other inputs pulled down
     ioWrite(PI4IO_REG_PULL_EN, (uint8_t)~outs);
     delay(100);
-    ioWrite(PI4IO_REG_OUT_SET, outs);           // release reset, antenna switch + LNA on
+    ioWrite(PI4IO_REG_OUT_SET, outs);           // release reset, antenna + RX path on
 
     checkFirmwareSwitch();
   }
+
+  // TX enable is DIO2; the RX path must be off while transmitting
+  void onBeforeTransmit() override { ioWrite(PI4IO_REG_OUT_SET, PI4IO_ANT_SW | PI4IO_LORA_RST); }
+  void onAfterTransmit() override { ioWrite(PI4IO_REG_OUT_SET, PI4IO_RX_EN | PI4IO_ANT_SW | PI4IO_LORA_RST); }
 
   void checkFirmwareSwitch();   // button held at power-on -> boot the other app slot
 

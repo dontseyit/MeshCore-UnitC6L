@@ -4,7 +4,8 @@ An alternative to `variants/m5stack_unit_c6l` that uses the whole board:
 
 - **64×48 SSD1306 OLED** (SPI, shares the bus with the SX1262) running the companion `ui-tiny` UI
 - **User button** (read through the PI4IOE5V6408 IO expander)
-- **RF front end set up properly**: SX1262 reset, antenna switch and **LNA enabled** via the expander (the stock variant never enables the LNA)
+- **RF front end set up properly**: SX1262 reset, antenna enable and RX enable via the expander, TCXO at 3.0 V
+  (the stock variant never sets up the expander and runs the TCXO at 1.8 V)
 - **Grove GPS** (M5Stack Unit GPS v1.1) on the HY2.0-4P port
 - **Dual boot**: companion (BLE) and repeater installed side by side, each with its own storage
 
@@ -16,7 +17,7 @@ An alternative to `variants/m5stack_unit_c6l` that uses the whole board:
 | SX1262 DIO1 / BUSY | 7 / 19 |
 | OLED CS / DC / RESET | 6 / 18 / 15 |
 | Internal I2C (IO expander 0x43) SDA / SCL | 10 / 8 |
-| Expander P0 / P5 / P6 / P7 | button / LNA_EN / ANT_SW / SX1262 NRST |
+| Expander P0 / P5 / P6 / P7 | button / RX enable (off during TX) / antenna enable / SX1262 NRST |
 | Buzzer | 11 |
 | Grove: GPS TX → C6L / C6L → GPS RX | 4 (white) / 5 (yellow) |
 
